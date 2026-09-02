@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "husky": "^9.1.7"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.4",
+    "admin-lte": "^3.2.0",
+    "bootstrap": "^4.6.2",
+    "icheck-bootstrap": "^3.0.1"
+  }
+}
