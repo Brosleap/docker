@@ -3,7 +3,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 class AuthController extends Controller 
 {
     public function signup(Request $request)
@@ -15,11 +16,13 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6|max:10|confirmed'
         ]);
+        
         //2
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password)
+            'password' => ($request->password)
+
         ]);
        return response()->json(['message' => 'User registered successfully'], 201);
     }
@@ -30,10 +33,37 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|max:10|'
         ]);
         $user = User::where('email', $request->email)->first();
-        
-        //model //null 
-        return response([
-            'message' => 'User signed in successfully'
-        ],200);
+        if (!Hash::check($request->password, $user->password)) {
+            throw validationException ::withMessages([
+                'password' => 'password does not match',
+            ]);
+        }
+        $token = $user->createToken('auth_token')->plainTextToken;
+       return response()->json([
+        'message' => 'User signed in successfully',
+        'user' => $user,
+        'token' => $token
+        ], 200);
+      
     }
+    public function signout(Request $request)
+    {
+        $user = $request->user();//get the authenticated user
+        $user->currentAccessToken  ()->delete();//delete the current access token of the authenticated user
+        return response([
+            'message' => 'User signed out successfully
+            '], 200);
+    }
+    public function verify(Request $request)
+    {
+
+        $user = $request->user();
+            return response([
+                'message' => 'Token is verified',
+                'user' => $user
+            ], 200);
+       
+        }
+    
+
 }
