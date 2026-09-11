@@ -1,7 +1,9 @@
 <?php 
 namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\SigninRequest;
 use App\Http\Requests\User\SignupRequest;
+use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -22,14 +24,13 @@ class AuthController extends Controller
             'password' => ($request->password)
 
         ]);
-       return response()->json(['message' => 'User registered successfully'], 201);
+       return response([
+        'message' => 'User registered successfully'
+        ], 201);
     }
-    public function signin(Request $request)
+    public function signin(SigninRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email|exists:users,email',
-            'password' => 'required|string|min:6|max:10|'
-        ]);
+      
         $user = User::where('email', $request->email)->first();
         if (!Hash::check($request->password, $user->password)) {
             throw validationException ::withMessages([
@@ -58,7 +59,7 @@ class AuthController extends Controller
         $user = $request->user();
             return response([
                 'message' => 'Token is verified',
-                'user' => $user
+                'user' => new UserResource($user)
             ], 200);
        
         }

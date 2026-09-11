@@ -7,8 +7,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::post ('/signup',[AuthController::class,'signup']);
 Route::post ('/signin',[AuthController::class,'signin']);
-Route::post ('/signout',[AuthController::class,'signout'])->middleware('auth:sanctum');
+///Route::post ('/signout',[AuthController::class,'signout'])->middleware('auth:sanctum');
 //we created a middleware for this route to check if the user is authenticated or not. If the user is not authenticated, it will return a 401 error. If the user is authenticated, it will call the signout method in the AuthController.
-Route::get('/verify', [AuthController::class, 'verify'])->middleware('auth:sanctum');
+//Route::get('/verify', [AuthController::class, 'verify'])->middleware('auth:sanctum');
 //we created a middleware for this route to check if the user is authenticated or not. If the user is not authenticated, it will return a 401 error. If the user is authenticated, it will call the verifyToken method in the AuthController.
+Route::middleware('auth:sanctum')->group(function(){
+    Route::post('/signout', [AuthController::class, 'signout']);
+    Route::post('/verify', [AuthController::class, 'verify']);
 
+});
