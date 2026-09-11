@@ -1,21 +1,19 @@
 <?php 
 namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\SignupRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+
 class AuthController extends Controller 
 {
-    public function signup(Request $request)
+    public function signup(SignupRequest $request)
     {
 
     //1
-       $request->validate([
-            'name' => 'required|string|max:100',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|max:10|confirmed'
-        ]);
+   //    $request->validate();
         
         //2
         $user = User::create([
